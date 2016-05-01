@@ -1,36 +1,37 @@
-import {Component, Input, Output EventEmitter} from 'angular2/core';
-import {FORM_PROVIDERS, FormBuilder, Validators} from 'angular2/common';
-import {DoublerService, INumberInfo} from './doubler-service'
-import { Observable } from 'rxjs/Subject';
+import {Component, Input, Output, EventEmitter} from 'angular2/core';
+import {FORM_PROVIDERS,
+        FormBuilder,
+        Validators,
+        ControlGroup} from 'angular2/common';
+import {INumberInfo} from './doubler-service';
 
 @Component({
     selector: 'doubler-input',
-
-    template: `
-      <form [ngFormModel]="numberForm" (submit)="update()">
-        <label>NUMBER</label>
-        <input ngControl="number" type="text" #number="ngForm"/>
-
-        <label>MULTIPLIER</label>
-        <input ngControl="multiplier" type="text" #multiplier="ngForm" />
-
-        <button type="submit" value="UPDATE" [disabled]="!numberForm.valid"/>
-      </form>
-  `
+    template: require('./templates/doubler-input.html')
 })
 export class DoublerInput {
-    @Input numberInfo :INumberInfo;
+    @Input() numberInfo :INumberInfo;
 
-    @Output onUpdateNumberInfo = new EventEmitter<INumberInfo>();
+    @Output() onUpdateNumberInfo = new EventEmitter();
+
+    numberForm :ControlGroup; // Would be nice to have strongly typed TypedControlGroup<numberInfo>
 
     update() {
-        // ToDo: Validate
-        // If valid
         const numberInfo: INumberInfo = {
-            number: 0, // set to from form
-            multiplier: 0 // set form form
+            // Strongly typed controller properties?
+
+            number: this.numberForm.controls.number.value,
+            multiplier: this.numberForm.controls.multiplier.value
         };
 
         this.onUpdateNumberInfo.emit(numberInfo);
+    }
+
+    constructor(builder: FormBuilder) {
+        // Strongly typed form builder? or build from model?
+        this.numberForm = builder.group({
+            number: ['', Validators.required],
+            multiplier: ['', Validators.required]
+        });
     }
 }

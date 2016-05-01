@@ -7,6 +7,7 @@ import {RouteConfig, Router} from 'angular2/router';
 import {Home} from './home';
 import {AppState} from './app.service';
 import {RouterActive} from './router-active';
+import {DoublerContainer} from "./doubler/doubler-container";
 
 /*
  * App Component
@@ -52,6 +53,10 @@ import {RouterActive} from './router-active';
             <li router-active>
               <a [routerLink]=" ['About'] ">About</a>
             </li>
+            |
+            <li router-active>
+              <a [routerLink]=" ['Doubler'] ">Doubler</a>
+            </li>
           </ul>
         </nav>
       </md-toolbar>
@@ -76,7 +81,8 @@ import {RouterActive} from './router-active';
   { path: '/',      name: 'Index', component: Home, useAsDefault: true },
   { path: '/home',  name: 'Home',  component: Home },
   // Async load a component using Webpack's require with es6-promise-loader and webpack `require`
-  { path: '/about', name: 'About', loader: () => require('es6-promise!./about')('About') }
+  { path: '/about', name: 'About', loader: () => require('es6-promise!./about')('About') },
+  {path: 'doubler', name: 'Doubler', component: DoublerContainer}
 ])
 export class App {
   angularclassLogo = 'assets/img/angularclass-avatar.png';

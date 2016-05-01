@@ -1,36 +1,42 @@
 import { Injectable } from 'angular2/core';
-import { Observable } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from "rxjs/Rx";
 
 @Injectable()
 export class DoublerService {
-  private _multiply: boolean = true;
+    private _numberInfoSubject = new BehaviorSubject<INumberInfo>(null);
+    numberInfo$: Observable<INumberInfo> = this._numberInfoSubject
+        .publishReplay(1)
+        .refCount();
 
-  private _numberInfo$ :Observable<number> = Observable
-    .timer(1, 1000)
-    .map(() => {
-      const multiplier = this._multiply
-        ? this._numberInfo.multiplier
-        : 1;
-      const number = this._numberInfo.number;
-      this._multiply = !this._multiply;
+    private _multiply: boolean = true;
 
-      return number * multiplier;
+    private _currentNumber$ :Observable<number> = Observable
+        .timer(1, 1000)
+        .map(() => {
+          const multiplier = this._multiply
+            ? this._numberInfo.multiplier
+            : 1;
+          const number = this._numberInfo.number;
+          this._multiply = !this._multiply;
+
+          return number * multiplier;
     });
 
-  get numberInfo$() :Observable<number> {
-    return this._numberInfo$;
-  }
+    get currentNumber$() :Observable<number> {
+        return this._currentNumber$;
+    }
 
-  private _numberInfo :INumberInfo = {
-    multiplier: 2,
-    number: 5
-  };
-  set numberInfo(numberInfo :INumberInfo) {
-    this._numberInfo = numberInfo;
-  }
+    private _numberInfo :INumberInfo = {
+        multiplier: 2,
+        number: 5
+    };
+    set numberInfo(numberInfo :INumberInfo) {
+        this._numberInfo = numberInfo;
+    }
 }
 
 export interface INumberInfo {
-  multiplier: number;
-  number: number;
+    multiplier: number;
+    number: number;
 }

@@ -1,0 +1,9 @@
+<form [ngFormModel]="numberForm" (submit)="update()">
+    <label>NUMBER</label>
+    <input ngControl="number" type="text" #number="ngForm"/>
+
+    <label>MULTIPLIER</label>
+    <input ngControl="multiplier" type="text" #multiplier="ngForm" />
+
+    <button type="submit" [disabled]="!numberForm.valid">Update</button>
+</form>
