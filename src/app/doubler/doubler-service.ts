@@ -1,6 +1,9 @@
 import { Injectable } from 'angular2/core';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from "rxjs/Rx";
+import { AutoValidate } from "../../AutoValidation/AutoValidation";
+
+import { Validators } from 'angular2/common';
 
 @Injectable()
 export class DoublerService {
@@ -27,16 +30,23 @@ export class DoublerService {
         return this._currentNumber$;
     }
 
-    private _numberInfo :INumberInfo = {
-        multiplier: 2,
-        number: 5
-    };
+    private _numberInfo :INumberInfo;
     set numberInfo(numberInfo :INumberInfo) {
         this._numberInfo = numberInfo;
     }
+
+    constructor() {
+        this._numberInfo = new INumberInfo();
+        this._numberInfo.multiplier = 2;
+        this._numberInfo.number = 5;
+        console.log(this._numberInfo);
+    }
 }
 
-export interface INumberInfo {
+export class INumberInfo  {
+    @AutoValidate([Validators.minLength(1), Validators.maxLength(2)])
     multiplier: number;
+
+    @AutoValidate([Validators.minLength(1)])
     number: number;
 }
