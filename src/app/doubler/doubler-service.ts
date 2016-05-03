@@ -44,9 +44,9 @@ export class DoublerService {
 }
 
 export class INumberInfo  {
-    @AutoValidate([Validators.minLength(1), Validators.maxLength(2)])
+    @AutoValidate([Validators.required, Validators.maxLength(2)])
     multiplier: number;
 
-    @AutoValidate([Validators.minLength(1)])
+    @AutoValidate([Validators.required, Validators.maxLength(4)])
     number: number;
 }

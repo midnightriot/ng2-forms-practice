@@ -5,8 +5,11 @@ import {FORM_PROVIDERS,
         ControlGroup} from 'angular2/common';
 import {INumberInfo} from './doubler-service';
 
+import { AutoFormBuilder } from "../../AutoValidation/AutoValidation";
+
 @Component({
     selector: 'doubler-input',
+    providers: [AutoFormBuilder],
     template: require('./templates/doubler-input.html')
 })
 export class DoublerInput {
@@ -27,11 +30,13 @@ export class DoublerInput {
         this.onUpdateNumberInfo.emit(numberInfo);
     }
 
-    constructor(builder: FormBuilder) {
+    constructor(autoBuilder: AutoFormBuilder) {
+        this.numberInfo = new INumberInfo();
+        this.numberForm = autoBuilder.autoGroup(this.numberInfo);
         // Strongly typed form builder? or build from model?
-        this.numberForm = builder.group({
-            number: ['', Validators.required],
-            multiplier: ['', Validators.required]
-        });
+        //this.numberForm = builder.group({
+        //    number: ['', Validators.required],
+        //    multiplier: ['', Validators.required]
+        //});
     }
 }
