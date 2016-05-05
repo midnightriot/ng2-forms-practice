@@ -4,13 +4,13 @@ import { BehaviorSubject } from "rxjs/Rx";
 import { AutoValidate } from "../../AutoValidation/AutoValidation";
 
 import { Validators } from 'angular2/common';
+import {IAutoValidatable} from "../../AutoValidation/AutoValidation";
+import {IValidationRule} from "../../AutoValidation/AutoValidation";
 
 @Injectable()
 export class DoublerService {
-    private _numberInfoSubject = new BehaviorSubject<INumberInfo>(null);
-    numberInfo$: Observable<INumberInfo> = this._numberInfoSubject
-        .publishReplay(1)
-        .refCount();
+    private _numberInfoSubject :BehaviorSubject<INumberInfo>;
+    numberInfo$: Observable<INumberInfo>;
 
     private _multiply: boolean = true;
 
@@ -36,17 +36,28 @@ export class DoublerService {
     }
 
     constructor() {
-        this._numberInfo = new INumberInfo();
-        this._numberInfo.multiplier = 2;
-        this._numberInfo.number = 5;
+        this.numberInfo = <INumberInfo> {
+            number: 5,
+            multiplier: 2
+        };
+
         console.log(this._numberInfo);
+        this._numberInfoSubject =  new BehaviorSubject<INumberInfo>(this._numberInfo);
+        this.numberInfo$ = this._numberInfoSubject
+            .publishReplay(1)
+            .refCount();
+
+        this.numberInfo$.subscribe(x => console.log('observe', x));
+
     }
 }
 
-export class INumberInfo  {
+export class INumberInfo implements IAutoValidatable  {
     @AutoValidate([Validators.required, Validators.maxLength(2)])
     multiplier: number;
 
     @AutoValidate([Validators.required, Validators.maxLength(4)])
     number: number;
+
+    __autoValidationRules :IValidationRule[];
 }

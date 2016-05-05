@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from 'angular2/core';
+import {Component, Input, Output, EventEmitter, OnInit} from 'angular2/core';
 import {FORM_PROVIDERS,
         FormBuilder,
         Validators,
@@ -12,7 +12,7 @@ import { AutoFormBuilder } from "../../AutoValidation/AutoValidation";
     providers: [AutoFormBuilder],
     template: require('./templates/doubler-input.html')
 })
-export class DoublerInput {
+export class DoublerInput implements OnInit{
     @Input() numberInfo :INumberInfo;
 
     @Output() onUpdateNumberInfo = new EventEmitter();
@@ -20,23 +20,22 @@ export class DoublerInput {
     numberForm :ControlGroup; // Would be nice to have strongly typed TypedControlGroup<numberInfo>
 
     update() {
-        const numberInfo: INumberInfo = {
-            // Strongly typed controller properties?
-
-            number: this.numberForm.controls.number.value,
-            multiplier: this.numberForm.controls.multiplier.value
-        };
-
-        this.onUpdateNumberInfo.emit(numberInfo);
+        this.onUpdateNumberInfo.emit(this.numberInfo);
     }
 
-    constructor(autoBuilder: AutoFormBuilder) {
-        this.numberInfo = new INumberInfo();
-        this.numberForm = autoBuilder.autoGroup(this.numberInfo);
+    constructor(private autoBuilder: AutoFormBuilder) {
+
+    }
+
+    ngOnInit() {
+        console.log('template@constructor', this.numberInfo);
+
+        this.numberForm = this.autoBuilder.autoGroup(INumberInfo, this.numberInfo);
         // Strongly typed form builder? or build from model?
-        //this.numberForm = builder.group({
-        //    number: ['', Validators.required],
-        //    multiplier: ['', Validators.required]
+        //this.numberForm = this.builder.group({
+        //    number: [this.numberInfo.number, Validators.required],
+        //    multiplier: [this.numberInfo.multiplier, Validators.required]
         //});
+        console.log('template@constructor', this.numberInfo);
     }
 }

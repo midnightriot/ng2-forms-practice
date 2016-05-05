@@ -40,24 +40,52 @@ export interface IValidationRule {
     validators: ValidatorFn[] // May need to adjust type to allow for Required validation type.
 }
 
+//(MyClass: typeof MyClass)
+
 //# Build From from autovalidation
 @Injectable()
 export class AutoFormBuilder extends FormBuilder {
-    autoGroup(validatable :any): modelModule.ControlGroup{
+    //autoGroup(validatable :any): modelModule.ControlGroup{
+    //    if (!validatable.__autoValidationRules){
+    //        throw new Error('Unable to set up AutoGroup: class contains no @AutoValidate properties');
+    //    }
+    //
+    //    let controlGroup = {};
+    //
+    //    _.forEach(validatable.__autoValidationRules, (x :IValidationRule) => {
+    //        controlGroup[x.propertyKey] = ['', Validators.compose(x.validators) ];
+    //    });
+    //
+    //    return this.group(controlGroup);
+    //}
+
+    autoGroup<T extends IAutoValidatable>(type: { new(): T ;}, templateObject? :T): modelModule.ControlGroup { // Note: unexpected behavior may occur if type does not have parameterless constructor.
+        let validatable :any = new type();
+
         if (!validatable.__autoValidationRules){
-            throw new Error('Unable to set up AutoGroup')
+            throw new Error('Does not implement IAutoValidatable');
         }
 
         let controlGroup = {};
 
         _.forEach(validatable.__autoValidationRules, (x :IValidationRule) => {
-            controlGroup[x.propertyKey] = ['', Validators.compose(x.validators) ];
-        });
+            let initialValue = '';
 
-        console.log(controlGroup);
+            if (templateObject != null) {
+                initialValue = (templateObject[x.propertyKey] != null)
+                    ? templateObject[x.propertyKey]
+                    : '';
+            }
+
+            controlGroup[x.propertyKey] = [initialValue, Validators.compose(x.validators) ];
+        });
 
         return this.group(controlGroup);
     }
+}
+
+export interface IAutoValidatable{
+    __autoValidationRules :IValidationRule[];
 }
 
 
